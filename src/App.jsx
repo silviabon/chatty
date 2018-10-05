@@ -11,13 +11,14 @@ class App extends Component {
     this.state = {
       loading: true,
       userCount: 0,
-      currentUser: {name: "Bob"}, // optional. if currentUser is not defined, it means the user is Anonymous
+      currentUser: {name: "Anonymous", textColor: Math.floor(Math.random() * Math.floor(4))}, // optional. if currentUser is not defined, it means the user is Anonymous
       messages: []
         // {
         //   id: 1,
         //   type: "incomingMessage",
         //   content: "I won't be impressed with technology until I can download food.",
-        //   username: "Anonymous1"
+        //   username: "Anonymous1",
+        //   textColor: 0
         // },
     };
     this.addNewMessage = this.addNewMessage.bind(this);
@@ -41,6 +42,9 @@ class App extends Component {
         case "userCountUpdate":
           this.setState({userCount: message.count});
           break;
+        case "newConection":
+        this.setState({currentUser: message.user});
+        break;
       }
     }
     setTimeout(() => {
@@ -50,13 +54,14 @@ class App extends Component {
 
   addNewMessage(message){
     const user = this.state.currentUser.name;
-    const newMessage = {type: "postMessage", content: message, username: user};
+    const textColor = this.state.currentUser.textColor;
+    const newMessage = {type: "postMessage", content: message, username: user, textColor: textColor};
     this.socket.send(JSON.stringify(newMessage));    
   }
 
   changeUserName(username){
     if(this.state.currentUser.name != username){
-      const newUser = {name: username};
+      const newUser = {name: username, textColor: this.state.currentUser.textColor};
       const promise = new Promise(()=>{
         const newMessage = {type: "postNotification", content: `${this.state.currentUser.name} changed their name to ${username}`, username: username};
         this.socket.send(JSON.stringify(newMessage)); 

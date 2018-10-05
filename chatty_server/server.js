@@ -22,7 +22,9 @@ const wss = new SocketServer({ server });
 // the ws parameter in the callback.
 wss.on('connection', (ws) => {
   console.log('Client connected');
+  
   wss.broadcast(JSON.stringify({type: "userCountUpdate", count: wss.clients.size}));
+  
   ws.on('message', function incoming(data) {
     const message = JSON.parse(data);
     const id = uuidv4();
